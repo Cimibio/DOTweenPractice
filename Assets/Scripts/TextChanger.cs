@@ -25,6 +25,7 @@ public class TextChanger : MonoBehaviour
 
     private Sequence _textSequence;
     private string _initialText;
+    private string _previousText;
 
     private void Awake()
     {
@@ -57,7 +58,7 @@ public class TextChanger : MonoBehaviour
 
                 case TextEffectType.Addition:
                     string additionText = "+" + step.text;
-                    _textSequence.Append(_textComponent.DOText(additionText, step.duration, true, ScrambleMode.None));
+                    _textSequence.Append(_textComponent.DOText(_previousText + additionText, step.duration, true, ScrambleMode.None));
                     break;
 
                 case TextEffectType.Hacking:
@@ -65,6 +66,7 @@ public class TextChanger : MonoBehaviour
                     break;
             }
 
+            _previousText = step.text;
             _textSequence.AppendInterval(_delayBetweenSteps);
         }
 
