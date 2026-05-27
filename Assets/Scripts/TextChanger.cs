@@ -1,22 +1,23 @@
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using System;
 
 public class TextChanger : MonoBehaviour
 {
     public enum TextEffectType
     {
-        Replacement = 1, // Ёффект замены
-        Addition = 2,    // Ёффект добавлени€
-        Hacking = 3      // Ёффект хакерского перебора
+        Replacement,
+        Addition,
+        Hacking
     }
 
-    [System.Serializable]
+    [Serializable]
     public struct TextStep
     {
-        public TextEffectType effectType; // ¬ыбор эффекта (1, 2 или 3)
-        [TextArea] public string text;     // “екст дл€ этого шага (больше никаких плюсов писать не нужно!)
-        public float duration;             // ƒлительность анимации
+        public TextEffectType effectType;
+        [TextArea] public string text;
+        public float duration;
     }
 
     [SerializeField] private TextStep[] _steps;
@@ -29,17 +30,21 @@ public class TextChanger : MonoBehaviour
 
     private void Awake()
     {
-        if (_textComponent != null)
-        {
-            _initialText = _textComponent.text;
-        }
+        if (_textComponent != null)        
+            _initialText = _textComponent.text;        
     }
 
     private void Start()
     {
-        if (_steps == null || _steps.Length == 0 || _textComponent == null) return;
+        if (_steps == null || _steps.Length == 0 || _textComponent == null) 
+            return;
 
         CreateSequence();
+    }
+
+    private void OnDestroy()
+    {
+        _textSequence?.Kill();
     }
 
     private void CreateSequence()
@@ -71,14 +76,11 @@ public class TextChanger : MonoBehaviour
         }
 
         _textSequence.SetLoops(-1)
-            .OnStepComplete(() =>
-            {
-                _textComponent.text = _initialText;
-            });
+            .OnStepComplete(ResetText);
     }
 
-    private void OnDestroy()
+    private void ResetText()
     {
-        _textSequence?.Kill();
+        _textComponent.text = _initialText;
     }
 }
